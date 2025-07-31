@@ -78,10 +78,16 @@ class ExplorationGallery {
         this.startAnimations();
     }
 
-    updateServerInfo() {
-        const servers = ['GitHub-CDN-US', 'GitHub-CDN-EU', 'GitHub-CDN-ASIA'];
-        const randomServer = servers[Math.floor(Math.random() * servers.length)];
-        this.serverInfo.textContent = `GitHub Pages | ${randomServer} | Status: Active`;
+    async updateServerInfo() {
+        try {
+            const response = await fetch('/api/health');
+            const data = await response.json();
+            this.serverInfo.textContent = `${data.platform} | ${data.server} | ${data.region}`;
+        } catch (error) {
+            const servers = ['Netlify-CDN-US', 'Netlify-CDN-EU', 'Netlify-CDN-ASIA'];
+            const randomServer = servers[Math.floor(Math.random() * servers.length)];
+            this.serverInfo.textContent = `Netlify Edge | ${randomServer} | Status: Active`;
+        }
     }
 
     renderPhotos() {

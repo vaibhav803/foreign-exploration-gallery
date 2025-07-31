@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard - Foreign Exploration Gallery</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .analytics-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            color: white;
+        }
+        .analytics-card h3 {
+            margin-bottom: 1rem;
+            color: #fff;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 0.5rem;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem 0;
+        }
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .stat-value {
+            font-weight: bold;
+            color: #fff;
+        }
+        .refresh-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            margin: 1rem;
+        }
+        .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>📊 Analytics Dashboard</h1>
+        <p>Real-time insights for Foreign Exploration Gallery</p>
+        <nav>
+            <a href="/" class="nav-link">← Back to Gallery</a>
+            <button id="refreshBtn" class="refresh-btn">🔄 Refresh Data</button>
+        </nav>
+    </header>
+
+    <main class="analytics-grid">
+        <div class="analytics-card">
+            <h3>📈 Overview</h3>
+            <div class="stat-row">
+                <span class="stat-label">Total Page Views:</span>
+                <span class="stat-value" id="pageViews">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Unique Visitors:</span>
+                <span class="stat-value" id="uniqueVisitors">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Total Requests:</span>
+                <span class="stat-value" id="totalRequests">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Active Sessions:</span>
+                <span class="stat-value" id="activeSessions">-</span>
+            </div>
+        </div>
+
+        <div class="analytics-card">
+            <h3>🖼️ Photo Statistics</h3>
+            <div class="stat-row">
+                <span class="stat-label">Total Photo Views:</span>
+                <span class="stat-value" id="photoViews">-</span>
+            </div>
+            <div id="popularPhotos">
+                <h4>Most Popular Photos:</h4>
+                <div class="loading">Loading...</div>
+            </div>
+        </div>
+
+        <div class="analytics-card">
+            <h3>🌐 Top Browsers</h3>
+            <div id="userAgents">
+                <div class="loading">Loading browser data...</div>
+            </div>
+        </div>
+
+        <div class="analytics-card">
+            <h3>🔗 Traffic Sources</h3>
+            <div id="referrers">
+                <div class="loading">Loading referrer data...</div>
+            </div>
+        </div>
+
+        <div class="analytics-card">
+            <h3>🌍 Top Countries</h3>
+            <div id="countries">
+                <div class="loading">Loading country data...</div>
+            </div>
+        </div>
+
+        <div class="analytics-card">
+            <h3>⚡ Real-time Data</h3>
+            <div class="stat-row">
+                <span class="stat-label">Current Visitors:</span>
+                <span class="stat-value" id="currentVisitors">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Requests/Minute:</span>
+                <span class="stat-value" id="requestsPerMinute">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Avg Session Duration:</span>
+                <span class="stat-value" id="sessionDuration">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Bounce Rate:</span>
+                <span class="stat-value" id="bounceRate">-</span>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Analytics Dashboard - Powered by Netlify Functions | Updates every 10 seconds</p>
+    </footer>
+
+    <script>
+        class AnalyticsDashboard {
+            constructor() {
+                this.refreshBtn = document.getElementById('refreshBtn');
+                this.setupEventListeners();
+                this.loadAnalytics();
+                this.startAutoRefresh();
+            }
+
+            setupEventListeners() {
+                this.refreshBtn.addEventListener('click', () => {
+                    this.loadAnalytics();
+                });
+            }
+
+            async loadAnalytics() {
+                try {
+                    this.refreshBtn.textContent = '🔄 Loading...';
+                    this.refreshBtn.disabled = true;
+
+                    const response = await fetch('/api/analytics');
+                    const data = await response.json();
+                    
+                    this.updateDashboard(data);
+                    
+                    this.refreshBtn.textContent = '🔄 Refresh Data';
+                    this.refreshBtn.disabled = false;
+                } catch (error) {
+                    console.error('Failed to load analytics:', error);
+                    this.refreshBtn.textContent = '🔄 Refresh Data';
+                    this.refreshBtn.disabled = false;
+                }
+            }
+
+            updateDashboard(data) {
+                document.getElementById('pageViews').textContent = data.overview.totalPageViews.toLocaleString();
+                document.getElementById('uniqueVisitors').textContent = data.overview.uniqueVisitors.toLocaleString();
+                document.getElementById('totalRequests').textContent = data.overview.totalRequests.toLocaleString();
+                document.getElementById('activeSessions').textContent = data.overview.activeSessions.toLocaleString();
+                document.getElementById('photoViews').textContent = data.photoStats.totalPhotoViews.toLocaleString();
+                document.getElementById('currentVisitors').textContent = data.realTimeData.currentVisitors;
+                document.getElementById('requestsPerMinute').textContent = data.realTimeData.requestsPerMinute;
+                document.getElementById('sessionDuration').textContent = data.realTimeData.averageSessionDuration + 's';
+                document.getElementById('bounceRate').textContent = data.realTimeData.bounceRate + '%';
+
+                this.updatePopularPhotos(data.photoStats.mostViewedPhotos);
+                this.updateUserAgents(data.topUserAgents);
+                this.updateReferrers(data.topReferrers);
+                this.updateCountries(data.topCountries);
+            }
+
+            updatePopularPhotos(photos) {
+                const container = document.getElementById('popularPhotos');
+                let html = '<h4>Most Popular Photos:</h4>';
+                photos.forEach(photo => {
+                    html += `<div class="stat-row"><span>${photo.title}</span><span>${photo.views} views</span></div>`;
+                });
+                container.innerHTML = html;
+            }
+
+            updateUserAgents(agents) {
+                const container = document.getElementById('userAgents');
+                let html = '';
+                agents.forEach(agent => {
+                    html += `<div class="stat-row"><span>${agent.agent}</span><span>${agent.count}</span></div>`;
+                });
+                container.innerHTML = html;
+            }
+
+            updateReferrers(referrers) {
+                const container = document.getElementById('referrers');
+                let html = '';
+                referrers.forEach(ref => {
+                    html += `<div class="stat-row"><span>${ref.referrer}</span><span>${ref.count}</span></div>`;
+                });
+                container.innerHTML = html;
+            }
+
+            updateCountries(countries) {
+                const container = document.getElementById('countries');
+                let html = '';
+                countries.forEach(country => {
+                    html += `<div class="stat-row"><span>${country.country}</span><span>${country.count}</span></div>`;
+                });
+                container.innerHTML = html;
+            }
+
+            startAutoRefresh() {
+                setInterval(() => {
+                    this.loadAnalytics();
+                }, 10000);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new AnalyticsDashboard();
+        });
+    </script>
+</body>
+</html>
