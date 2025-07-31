@@ -14,8 +14,8 @@ COPY . .
 # Create uploads directory
 RUN mkdir -p uploads
 
-# Expose port
-EXPOSE 3000
+# Expose port (Railway uses PORT env variable)
+EXPOSE $PORT
 
 # Start the application
 CMD ["npm", "start"]
