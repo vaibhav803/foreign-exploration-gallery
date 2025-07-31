@@ -20,8 +20,8 @@ curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
 apt install -y nodejs
 
 echo "📥 Cloning application..."
-# You'll need to replace this with your actual repository
-git clone https://github.com/YOUR_USERNAME/foreign-exploration-gallery.git /opt/exploration-gallery
+# Clone the actual repository
+git clone https://github.com/vaibhav803/foreign-exploration-gallery.git /opt/exploration-gallery
 cd /opt/exploration-gallery
 
 echo "🏗️  Building application..."
