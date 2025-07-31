@@ -201,10 +201,9 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(`Server ID: ${process.env.SERVER_ID || 'railway-server'}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Server ID: ${process.env.SERVER_ID || 'server-1'}`);
 });
 
 module.exports = app;
