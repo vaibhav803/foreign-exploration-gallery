@@ -1,0 +1,12 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy test files
+COPY tests/ ./tests/
+
+# Install test dependencies
+RUN cd tests && npm install
+
+# Run tests
+CMD ["node", "tests/test.js"]
